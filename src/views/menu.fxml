@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.VBox?>
+
+<SplitPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="420.0" prefWidth="458.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controls.MenuCtl">
+   <items>
+      <VBox prefHeight="200.0" prefWidth="100.0">
+         <children>
+            <MenuBar>
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                    <MenuItem mnemonicParsing="false" onAction="#onFile" text="Close" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Depot">
+                  <items>
+                        <MenuItem mnemonicParsing="false" onAction="#onAnlegen" text="anlegen" />
+                    <MenuItem mnemonicParsing="false" onAction="#onVerwalten" text="verwalten" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Trading">
+                  <items>
+                    <MenuItem mnemonicParsing="false" onAction="#onTradingIdee" text="TradingIdee" />
+                  </items>
+                </Menu>
+                  <Menu mnemonicParsing="false" text="Transaktion">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#onTransaktion" text="Verwaltung" />
+                     </items>
+                  </Menu>
+              </menus>
+            </MenuBar>
+            <ImageView fx:id="imageView" fitHeight="335.0" fitWidth="348.0" pickOnBounds="true" preserveRatio="true" />
+         </children>
+      </VBox>
+   </items>
+</SplitPane>

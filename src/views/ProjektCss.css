@@ -1,0 +1,52 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+
+
+/*
+ * 1. Typselektor
+ * 2. .Styleklasse
+ * 3. #id
+ */
+ 
+
+/*Typselektor*/
+ 
+ dddLabel {
+ 	-fx-alignment: center;
+ 	-fx-text-alignment: center;
+ 	-fx-wrap-text: true;
+ 	-fx-font: 20 "Courier";
+ }
+ 
+ 
+
+/*Styleklasse*/
+ 
+  
+ /*#id*/
+
+ 
+ /*Pseudoklassen*/
+ #btn_Create:hover {
+ 	-fx-background-color: white;
+ }
+ 
+  #btn_Exit:hover {
+ 	-fx-background-color: white;
+ }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
