@@ -2,11 +2,9 @@ package services;
 
 import controls.ProgModus;
 import javax.persistence.Query;
-
 import javax.persistence.EntityNotFoundException;
 import java.io.Serializable;
 import java.util.*;
-import javafx.scene.control.RadioButton;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import model.Tradingidee;
@@ -15,6 +13,7 @@ import model.Transaktion;
 public class TransaktionSrv implements Serializable {
 
     private EntityManagerFactory emf = null;
+    private TradingIdeeSrv tradingIdeeSrv = null;
 
     public TransaktionSrv(EntityManagerFactory emf) {
         this.emf = emf;
@@ -75,29 +74,24 @@ public class TransaktionSrv implements Serializable {
     }
 
     public void loeschen(int id) throws Throwable {
-        Tradingidee tradingIdeeAktuell = null;
+        tradingIdeeSrv = new TradingIdeeSrv(emf);
         EntityManager em = null;
-
         try {
             em = getEntityManager();
             em.getTransaction().begin();
 
             Transaktion transaktion = em.getReference(Transaktion.class, id);
-            tradingIdeeAktuell = transaktion.getTradingId();
-            List<String> meldungen = null;
-            if (!tradingIdeeAktuell.equals(null)) {
-                meldungen = new ArrayList<String>();
-                meldungen.add("Folgende Tradingidee ist aktuell der Transaktion " + transaktion.getId() + " zugeordnet: " + tradingIdeeAktuell);
-            }
-            if (meldungen != null) {
-                meldungen.add("Die Transaktion " + transaktion.getId() + " kann daher nicht gelöscht werden!");
-                throw new PlausiException(meldungen);
+
+            Tradingidee tI = transaktion.getTradingId();
+            if (tI != null) {
+                tradingIdeeSrv.loeschen(tI.getId());
+                tI = em.merge(tI);
             }
             em.remove(transaktion);
             em.getTransaction().commit();
 
         } catch (EntityNotFoundException enfe) {
-            throw new PlausiException("Das Depot kann nicht gelöscht werden, weil es nicht vorhanden ist!");
+            throw new PlausiException("Die Transaktion kann nicht gelöscht werden, weil sie nicht vorhanden ist!");
 
         } finally {
             if (em != null) {
@@ -146,29 +140,23 @@ public class TransaktionSrv implements Serializable {
 
         ArrayList<String> meldungen = new ArrayList();
 
-        if (ProgModus.IS_SELECTED_RB) {
+        if (ProgModus.IS_ANGELEGT) {
 
             //Plausiprüfung bei konkreter Tradingidee
-            if (t.getKaufdatum() == null || t.getOcoDatum() == null || t.getKaufdatum() != null && t.getOcoDatum() == null || t.getOcoDatum().before(t.getKaufdatum())) {
-
-                if (t.getKaufdatum() == null) {
-                    meldungen.add("Bitte ein Kauf-Datum eingeben");
-                }
+            if (t.getOcoDatum() == null || t.getOcoDatum().before(t.getKaufdatum())) {
 
                 if (t.getOcoDatum() == null) {
                     meldungen.add("Bei einer konkreten Tradingidee bitte ein OCO-Datum eingeben");
                 }
-                if (t.getKaufdatum() != null && t.getOcoDatum() != null) {
-                    if (t.getOcoDatum().before(t.getKaufdatum())) {
-                        meldungen.add("Bitte ein OCO-Datum nach dem Kaufdatum eingeben");
-                    }
+                if (t.getOcoDatum().before(t.getKaufdatum())) {
+                    meldungen.add("Bitte ein OCO-Datum nach dem Kaufdatum eingeben");
                 }
             }
         }
 
         if (ProgModus.IS_COMPLETED) {
             //Plausiprüfung bei Abschluss einer konkreter Tradingidee
-            if ((t.getKursVerkauf() != null && t.getVerkaufdatum() == null) || (t.getKursVerkauf() == null && t.getVerkaufdatum() != null) || t.getVerkaufdatum().before(t.getKaufdatum())) {
+            if ((t.getVerkaufdatum() == null) || t.getKursVerkauf() == null || t.getVerkaufdatum().before(t.getKaufdatum())) {
 
                 if (t.getVerkaufdatum() == null) {
                     meldungen.add("Bitte ein Verkaufsdatum eingeben");

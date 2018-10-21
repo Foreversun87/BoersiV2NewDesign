@@ -10,7 +10,10 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,14 +22,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javax.swing.JTextField;
 import model.Aktie;
 import model.DbVerbindung;
 import model.Tradingidee;
@@ -56,29 +62,11 @@ public class TransaktionCtl implements Initializable {
     private TableColumn<TransaktionsTabellenModel, String> colKaufKurs;
     @FXML
     private TableColumn<TransaktionsTabellenModel, String> colKaufDatum;
-    @FXML
-    private TextField txtStueckzahl;
-    @FXML
-    private TextField txtKursVerkauf;
-    @FXML
-    private TextField txtVerkaufDatum;
-    private TextField txtKursKauf;
-    @FXML
-    private TextField txtKaufDatum;
-    @FXML
-    private Button btnDelete;
-    @FXML
-    private Button btnUpdate;
-    @FXML
+
     private Button btnView;
-    @FXML
-    private Button btnExit;
-    @FXML
     private Label lblMeldung;
     @FXML
     private TableColumn<TransaktionsTabellenModel, String> colOCODate;
-    @FXML
-    private TextField txtOCODate;
 
     private TransaktionSrv transaktionSrv = new TransaktionSrv(DbVerbindung.getEmf());
 
@@ -114,13 +102,14 @@ public class TransaktionCtl implements Initializable {
         colVerkaufDatum.setCellValueFactory(new PropertyValueFactory<>("verkaufsdatum"));
         colVerkaufKurs.setCellValueFactory(new PropertyValueFactory<>("kursVerkauf"));
 
+        tblTransaktion.setEditable(true);
+        colOCODate.setCellFactory(TextFieldTableCell.forTableColumn());
+
         try {
             fuellenTab();
         } catch (Throwable ex) {
             MessageSrv.handleException(ex);
         }
-
-        btnView.setVisible(false);
     }
 
     public void fuellenTab() throws Throwable {
@@ -148,61 +137,19 @@ public class TransaktionCtl implements Initializable {
         }
     }
 
-    private void clear() {
-        txtKaufDatum.setText("");
-        txtKursVerkauf.setText("");
-        txtOCODate.setText("");
-        txtStueckzahl.setText("");
-        txtVerkaufDatum.setText("");
-    }
-
     @FXML
     private void onAuswahl(MouseEvent event) {
-
-        btnView.setVisible(true);
         dt = null;
         try {
 
             dt = (TransaktionsTabellenModel) tblTransaktion.getSelectionModel().getSelectedItem();
             if (dt == null) {
-                btnView.setVisible(false);
                 return;
             } else {
                 // Transaktion in Datenbank unter Verwendung ID holen:
                 aktTransaktion = new Transaktion();
                 aktTransaktion = transaktionSrv.find(Integer.valueOf(dt.getId()));
-
-                if (aktTransaktion.getKaufdatum() != null) {
-                    txtKaufDatum.setText(df.format(aktTransaktion.getKaufdatum()));
-                } else {
-                    txtKaufDatum.setText("");
-                }
-
-                if (aktTransaktion.getKursVerkauf() != null) {
-                    txtKursVerkauf.setText(String.valueOf(aktTransaktion.getKursVerkauf()));
-                } else {
-                    txtKursVerkauf.setText("");
-                }
-
-                if (aktTransaktion.getOcoDatum() != null) {
-                    txtOCODate.setText(df.format(aktTransaktion.getOcoDatum()));
-                } else {
-                    txtOCODate.setText("");
-                }
-
-                if (aktTransaktion.getStueckzahl() != null) {
-                    txtStueckzahl.setText(String.valueOf(aktTransaktion.getStueckzahl()));
-                } else {
-                    txtStueckzahl.setText("");
-                }
-
-                if (aktTransaktion.getVerkaufdatum() != null) {
-                    txtVerkaufDatum.setText(df.format(aktTransaktion.getVerkaufdatum()));
-                } else {
-                    txtVerkaufDatum.setText("");
-                }
-
-                System.out.println(dt.getId());
+                System.out.println(aktTransaktion);
             }
 
         } catch (Throwable ex) {
@@ -211,8 +158,54 @@ public class TransaktionCtl implements Initializable {
 
     }
 
+    private void onExitDepot(ActionEvent event) {
+        Stage stage = (Stage) lblMeldung.getScene().getWindow();
+        stage.close();
+
+    }
+
+    public void createTransaktion(Tradingidee aktTradingIdee, Aktie aktAktie, DatePicker dp_oco, Double stueckzahl) throws Throwable {
+
+        //Erstellen der Transaktion
+        aktTransaktion = new Transaktion();
+        aktTransaktion.setTradingId(aktTradingIdee);
+        aktTransaktion.setAktieId(aktAktie);
+
+        //Ermittlung Stückzahl
+        aktTransaktion.setStueckzahl(stueckzahl);
+        //Generierung Notiz
+        aktTransaktion.setNotiz(createNotiz(aktTradingIdee));
+
+        if (!aktTradingIdee.isIsVorschlag()) {
+            aktTransaktion.setKaufdatum(new Date());
+            if (dp_oco.getValue() != null) {
+                aktTransaktion.setOcoDatum(java.sql.Date.valueOf(dp_oco.getValue()));
+            }
+        }
+        ProgModus.IS_ANGELEGT = true;
+        ProgModus.IS_COMPLETED = false;
+        transaktionSrv.anlegen(aktTransaktion);
+
+    }
+
+    /*
+    Erstellung der Notiz    
+     */
+    private String createNotiz(Tradingidee aktTradingidee) {
+        String notiz = "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *" + ","
+                + "* Depot-Eigentümer: " + aktTradingidee.getDepotID().getUser()
+                + " Depot-Wert: " + aktTradingidee.getDepotID().getKapital() + " Risiko pro Trade: " + aktTradingidee.getDepotID().getRiskikoeinzel() + "*" + ","
+                + "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *" + ","
+                + "* Gehandelte Aktie: " + aktTradingidee.getAktienId().getBez() + "                                                                      *" + ","
+                + "* Geplanter Zielkurs: " + aktTradingidee.getKursStopppositiv() + " geplanter Stopplosskurs: " + aktTradingidee.getKursStoppnegativ() + "                         *" + ","
+                + "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *" + ",";
+
+        return notiz;
+    }
+
     @FXML
-    private void onDeleteDepot(ActionEvent event) {
+    private void handleDelete(ActionEvent event) {
+
         try {
             if (dt == null) {
                 return;
@@ -223,7 +216,7 @@ public class TransaktionCtl implements Initializable {
                     System.out.println("Transaktion gelöscht");
                     // lbl.setText("Lager " + aktDepot.getId() + " gelöscht!");
                     fuellenTab();
-                    clear();
+
                 } else {
                     System.out.println("Transaktion nicht gelöscht");
                     // txtAusgabe.setText("Depot " + aktDepot.getId() + " nicht gelöscht!");
@@ -232,11 +225,36 @@ public class TransaktionCtl implements Initializable {
         } catch (Throwable ex) {
             MessageSrv.handleException(ex);
         }
+
     }
 
     @FXML
-    private void onUpdateDepot(ActionEvent event) {
+    private void handleUpdate(ActionEvent event) {
+        try {
+            if (dt == null) {
+                return;
+            } else {
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setTitle("Transaktion Abschließen");
+                dialog.setHeaderText("Bitte Aktienkurs und Verkaufsdatum angeben");
+                dialog.setContentText("Bitte das Datum,Kurs z.B: 2018-10-10,45.30 eingeben");
+                Optional<String> result = dialog.showAndWait();
+                if (result.isPresent()) {
+                    aktTransaktion.setVerkaufdatum(java.sql.Date.valueOf(result.get().split(",")[0]));
+                    aktTransaktion.setKursVerkauf(Double.valueOf(result.get().split(",")[1]));
+                    ProgModus.IS_ANGELEGT = false;
+                    ProgModus.IS_COMPLETED = true;
+                    transaktionSrv.aendern(aktTransaktion);
+                    fuellenTab();
+                }
 
+            }
+        } catch (Throwable ex) {
+            MessageSrv.handleException(ex);
+        }
+
+
+        /* 
         try {
             if (dt == null) {
                 return;
@@ -285,70 +303,45 @@ public class TransaktionCtl implements Initializable {
         } catch (Throwable ex) {
             MessageSrv.handleException(ex);
         }
-
+         */
     }
 
     @FXML
-    private void onView(ActionEvent event) {
+    private void handleNotiz(ActionEvent event) {
+
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../views/NotizXML.fxml"));
-            System.out.println("Ich bin der Loader Trading von NotizXML " + fxmlLoader.toString());
-            Parent root = (Parent) fxmlLoader.load();
-            NotizCtl notizCtl = fxmlLoader.getController();
-            notizCtl.setAktTransaktion(aktTransaktion);
-            notizCtl.load();
-            Scene sceneNotiz = new Scene(root);
-            Stage stageNotiz = new Stage();
-            stageNotiz.setScene(sceneNotiz);
-            stageNotiz.setTitle("Notiz verwalten");
-            stageNotiz.show();
+            if (dt == null) {
+                return;
+            } else {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../views/NotizXML.fxml"));
+                System.out.println("Ich bin der Loader Trading von NotizXML " + fxmlLoader.toString());
+                Parent root = (Parent) fxmlLoader.load();
+                NotizCtl notizCtl = fxmlLoader.getController();
+                notizCtl.setAktTransaktion(aktTransaktion);
+                notizCtl.load();
+                Scene sceneNotiz = new Scene(root);
+                Stage stageNotiz = new Stage();
+                stageNotiz.setScene(sceneNotiz);
+                stageNotiz.setTitle("Notiz verwalten");
+                stageNotiz.show();
+            }
         } catch (IOException ex) {
             MessageSrv.handleException(ex);
+
         }
     }
 
     @FXML
-    private void onExitDepot(ActionEvent event) {
-        Stage stage = (Stage) lblMeldung.getScene().getWindow();
-        stage.close();
+    private void onEditOcoDatum(TableColumn.CellEditEvent<TransaktionsTabellenModel, String> event) {
+        TransaktionsTabellenModel transaktionTabellenModel = tblTransaktion.getSelectionModel().getSelectedItem();
+        aktTransaktion.setOcoDatum(java.sql.Date.valueOf(event.getNewValue()));
+        try {
+            transaktionSrv.aendern(aktTransaktion);
+            fuellenTab();
 
-    }
-
-    public void createTransaktion(Tradingidee aktTradingIdee, Aktie aktAktie, DatePicker dp_oco, Double stueckzahl) throws Throwable {
-
-        //Erstellen der Transaktion
-        aktTransaktion = new Transaktion();
-        aktTransaktion.setTradingId(aktTradingIdee);
-        aktTransaktion.setAktieId(aktAktie);
-
-        //Ermittlung Stückzahl
-        aktTransaktion.setStueckzahl(stueckzahl);
-        //Generierung Notiz
-        aktTransaktion.setNotiz(createNotiz(aktTradingIdee));
-
-        if (!aktTradingIdee.isIsVorschlag()) {
-            aktTransaktion.setKaufdatum(new Date());
-            if (dp_oco.getValue() != null) {
-                aktTransaktion.setOcoDatum(java.sql.Date.valueOf(dp_oco.getValue()));
-            }
+        } catch (Throwable ex) {
+            MessageSrv.handleException(ex);
         }
-        transaktionSrv.anlegen(aktTransaktion);
-
-    }
-
-    /*
-    Erstellung der Notiz    
-     */
-    private String createNotiz(Tradingidee aktTradingidee) {
-        String notiz = "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *" + ","
-                + "* Depot-Eigentümer: " + aktTradingidee.getDepotID().getUser()
-                + " Depot-Wert: " + aktTradingidee.getDepotID().getKapital() + " Risiko pro Trade: " + aktTradingidee.getDepotID().getRiskikoeinzel() + "*" + ","
-                + "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *" + ","
-                + "* Gehandelte Aktie: " + aktTradingidee.getAktienId().getBez() + "                                                                      *" + ","
-                + "* Geplanter Zielkurs: " + aktTradingidee.getKursStopppositiv() + " geplanter Stopplosskurs: " + aktTradingidee.getKursStoppnegativ() + "                         *" + ","
-                + "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *" + ",";
-
-        return notiz;
     }
 
 }

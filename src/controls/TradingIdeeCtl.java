@@ -291,6 +291,8 @@ public class TradingIdeeCtl implements Initializable {
                     }
                 } else {
                     //Tradingidee als Vorschlag
+                    ProgModus.IS_ANGELEGT = false;
+                    ProgModus.IS_COMPLETED = false;
                     aktTradingIdee = createTradingIdee();
                     lblMeldung.setText("Tradingidee:" + " " + aktTradingIdee.getId() + " angelegt!");
                     maskeClear();
