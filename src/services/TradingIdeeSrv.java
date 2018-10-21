@@ -179,14 +179,9 @@ public class TradingIdeeSrv implements Serializable {
         if (d.getDepotID().equals(null)) {
             meldungen.add("Bitte ein Depot auswählen");
         }
-        
-        if(d.getAktienId() == null){
-            meldungen.add("Bitte eine Aktie eingeben");
-        }
 
         if (!meldungen.isEmpty()) {
             throw new PlausiException(meldungen);
         }
-
     }
 }

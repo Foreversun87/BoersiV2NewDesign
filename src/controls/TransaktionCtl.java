@@ -8,6 +8,7 @@ package controls;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -17,6 +18,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
@@ -25,7 +27,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import model.Aktie;
 import model.DbVerbindung;
+import model.Tradingidee;
 import model.Transaktion;
 import model.TransaktionsTabellenModel;
 import services.MessageSrv;
@@ -308,6 +312,43 @@ public class TransaktionCtl implements Initializable {
         Stage stage = (Stage) lblMeldung.getScene().getWindow();
         stage.close();
 
+    }
+
+    public void createTransaktion(Tradingidee aktTradingIdee, Aktie aktAktie, DatePicker dp_oco, Double stueckzahl) throws Throwable {
+
+        //Erstellen der Transaktion
+        aktTransaktion = new Transaktion();
+        aktTransaktion.setTradingId(aktTradingIdee);
+        aktTransaktion.setAktieId(aktAktie);
+
+        //Ermittlung Stückzahl
+        aktTransaktion.setStueckzahl(stueckzahl);
+        //Generierung Notiz
+        aktTransaktion.setNotiz(createNotiz(aktTradingIdee));
+
+        if (!aktTradingIdee.isIsVorschlag()) {
+            aktTransaktion.setKaufdatum(new Date());
+            if (dp_oco.getValue() != null) {
+                aktTransaktion.setOcoDatum(java.sql.Date.valueOf(dp_oco.getValue()));
+            }
+        }
+        transaktionSrv.anlegen(aktTransaktion);
+
+    }
+
+    /*
+    Erstellung der Notiz    
+     */
+    private String createNotiz(Tradingidee aktTradingidee) {
+        String notiz = "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *" + ","
+                + "* Depot-Eigentümer: " + aktTradingidee.getDepotID().getUser()
+                + " Depot-Wert: " + aktTradingidee.getDepotID().getKapital() + " Risiko pro Trade: " + aktTradingidee.getDepotID().getRiskikoeinzel() + "*" + ","
+                + "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *" + ","
+                + "* Gehandelte Aktie: " + aktTradingidee.getAktienId().getBez() + "                                                                      *" + ","
+                + "* Geplanter Zielkurs: " + aktTradingidee.getKursStopppositiv() + " geplanter Stopplosskurs: " + aktTradingidee.getKursStoppnegativ() + "                         *" + ","
+                + "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *" + ",";
+
+        return notiz;
     }
 
 }

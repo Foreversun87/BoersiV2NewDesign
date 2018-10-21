@@ -33,6 +33,7 @@
                </children>
             </VBox>
             <Button fx:id="btnKurs_WKN" mnemonicParsing="false" onAction="#onKurs_WKN" prefHeight="31.0" prefWidth="169.0" text="Kurs ermitteln" />
+            <Label fx:id="lbl_Meldung" prefHeight="42.0" prefWidth="555.0" />
          </children>
       </HBox>
    </top>

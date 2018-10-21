@@ -6,6 +6,7 @@
 package model;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,6 +18,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -57,6 +60,12 @@ public class Tradingidee implements Serializable {
     private Depot depotID;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "tradingId")
     private Transaktion transaktion;
+    @Basic(optional = false)
+    @Column(name = "isVorschlag")
+    private boolean isVorschlag;
+    @Column(name = "erstellungsDatum")
+    @Temporal(TemporalType.DATE)
+    private Date erstellungsDatum;
 
     public Tradingidee() {
     }
@@ -65,11 +74,14 @@ public class Tradingidee implements Serializable {
         this.id = id;
     }
 
-    public Tradingidee(String id, double kursStoppnegativ, double kursStopppositiv, double aktKurs) {
+    public Tradingidee(String id, double kursStoppnegativ, double kursStopppositiv, double aktKurs, boolean isVorschlag, Date erstellungsDatum) {
         this.id = id;
         this.kursStoppnegativ = kursStoppnegativ;
         this.kursStopppositiv = kursStopppositiv;
         this.aktKurs = aktKurs;
+        this.isVorschlag = isVorschlag;
+        this.erstellungsDatum = erstellungsDatum;
+
     }
 
     public String getId() {
@@ -148,9 +160,25 @@ public class Tradingidee implements Serializable {
         return true;
     }
 
+    public boolean isIsVorschlag() {
+        return isVorschlag;
+    }
+
+    public void setIsVorschlag(boolean isVorschlag) {
+        this.isVorschlag = isVorschlag;
+    }
+
     @Override
     public String toString() {
         return "model.Tradingidee[ id=" + id + " ]";
     }
-    
+
+    public Date getErstellungsDatum() {
+        return erstellungsDatum;
+    }
+
+    public void setErstellungsDatum(Date erstellungsDatum) {
+        this.erstellungsDatum = erstellungsDatum;
+    }
+
 }

@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<SplitPane fx:id="stageTransaktions" dividerPositions="0.8, 0.91" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controls.TransaktionCtl">
+<SplitPane fx:id="stageTransaktions" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controls.TransaktionCtl">
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
          <children>
@@ -36,55 +36,18 @@
                         <TableColumn fx:id="colKaufKurs" prefWidth="163.0" text="Kurs Kauf" />
                         <TableColumn fx:id="colKaufDatum" prefWidth="162.0" text="Kaufdatum" />
                     </columns>
+                     <contextMenu>
+                        <ContextMenu>
+                          <items>
+                            <MenuItem mnemonicParsing="false" onAction="#handleDelete" text="Transaktion löschen" />
+                              <MenuItem mnemonicParsing="false" onAction="#handleUpdate" text="Transaktion ändern" />
+                              <MenuItem mnemonicParsing="false" onAction="#handleNotiz" text="Notiz von Transaktion anzeigen" />
+                          </items>
+                        </ContextMenu>
+                     </contextMenu>
                   </TableView>
                </children>
             </VBox>
-         </children></AnchorPane>
-      <HBox prefHeight="100.0" prefWidth="200.0">
-         <children>
-            <VBox prefHeight="200.0" prefWidth="100.0">
-               <children>
-                  <Label text="Stückzahl" />
-                  <TextField fx:id="txtStueckzahl" />
-               </children>
-            </VBox>
-            <VBox prefHeight="200.0" prefWidth="100.0">
-               <children>
-                  <Label text="OCO-Datum" />
-                  <TextField fx:id="txtOCODate" />
-               </children>
-            </VBox>
-            <VBox prefHeight="200.0" prefWidth="100.0">
-               <children>
-                  <Label text="Kurs Verkauf" />
-                  <TextField fx:id="txtKursVerkauf" />
-               </children>
-            </VBox>
-            <VBox prefHeight="200.0" prefWidth="100.0">
-               <children>
-                  <Label text="Verkaufsdatum" />
-                  <TextField fx:id="txtVerkaufDatum" />
-               </children>
-            </VBox>
-            <VBox prefHeight="200.0" prefWidth="100.0">
-               <children>
-                  <Label text="Kaufdatum" />
-                  <TextField fx:id="txtKaufDatum" />
-               </children>
-            </VBox>
-         </children>
-      </HBox>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-         <children>
-            <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <children>
-                  <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#onDeleteDepot" prefHeight="31.0" prefWidth="84.0" text="Löschen" />
-                  <Button fx:id="btnUpdate" mnemonicParsing="false" onAction="#onUpdateDepot" prefHeight="25.0" prefWidth="150.0" text="Ändern" />
-                  <Button fx:id="btnView" mnemonicParsing="false" onAction="#onView" prefHeight="31.0" prefWidth="128.0" text="Notiz anzeigen" />
-                  <Button fx:id="btnExit" mnemonicParsing="false" onAction="#onExitDepot" prefHeight="25.0" prefWidth="133.0" text="Beenden" />
-                  <Label fx:id="lblMeldung" prefHeight="21.0" prefWidth="471.0" />
-               </children>
-            </HBox>
          </children></AnchorPane>
   </items>
 </SplitPane>

@@ -34,6 +34,7 @@ import services.AktieSrv;
 import services.MessageSrv;
 import services.TradingIdeeSrv;
 import services.TransaktionSrv;
+import utils.Datumkonvert;
 
 /**
  * FXML Controller class
@@ -86,6 +87,8 @@ public class TradingIdeeCtl implements Initializable {
     private Label lblMeldung;
     @FXML
     private DatePicker dp_oco;
+    @FXML
+    private Label lbl_Meldung;
 
     public String getTest() {
         return test;
@@ -94,6 +97,8 @@ public class TradingIdeeCtl implements Initializable {
     public void setTest(String test) {
         this.test = test;
     }
+    private double stueckzahl;
+    private double guV;
 
     private Depot aktDepot;
     public Stage mainStage;
@@ -107,6 +112,7 @@ public class TradingIdeeCtl implements Initializable {
 
     private TransaktionSrv transaktionSrv = new TransaktionSrv(DbVerbindung.getEmf());
     private Transaktion aktTransaktion;
+    private TransaktionCtl transaktionCtl;
 
     public Stage getMainStage() {
         return mainStage;
@@ -125,7 +131,6 @@ public class TradingIdeeCtl implements Initializable {
     }
     HostServices hostService;
 
-   
     /**
      * Initializes the controller class.
      */
@@ -135,7 +140,7 @@ public class TradingIdeeCtl implements Initializable {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../views/TransaktionXML.fxml"));
             System.out.println("Ich bin der Loader Trading von TransaktionXML " + fxmlLoader.toString());
             Parent root = (Parent) fxmlLoader.load();
-            TransaktionCtl transaktionCtl = fxmlLoader.getController();
+            transaktionCtl = fxmlLoader.getController();
             tradingideeKonkret.setScene(new Scene(root));
             tradingideeKonkret.setTitle("Transaktionen");
         } catch (IOException ex) {
@@ -185,14 +190,13 @@ public class TradingIdeeCtl implements Initializable {
             double oGrenzeProzent = (oGrenze - kursIstWert) / kursIstWert * 100;
             double uGrenzeProzent = -(uGrenze - kursIstWert) / kursIstWert * 100;
             double position = risikoEinzelWert / uGrenzeProzent * 100;
-            double guV = 0;
 
             //Berechnungen Gewinnverlust-Verhältnis und hinzufügen
             guV = (oGrenze - kursIstWert) / (kursIstWert - uGrenze);
             txtGuVVerhaeltnis.setText(String.valueOf(guV));
 
             //Berechnen Stückzahl und hinzufügen
-            double stueckzahl = position / kursIstWert;
+            stueckzahl = position / kursIstWert;
 
             txtStueckzahl.setText(String.valueOf(stueckzahl));
         }
@@ -217,10 +221,9 @@ public class TradingIdeeCtl implements Initializable {
         hostServices.showDocument("https://webtrading.onvista-bank.de/login");
     }
 
-
     public String bestimmungAktieId() throws Throwable {
 
-        aktAktie = aktAktie();
+        aktAktie = aktieSrv.findByBezeichnung(txtKurs_WKN.getText());
         /*
          * Achtung bei Neuerstellen der Models, muss manuell hinzugefügt werden im Model Tradingidee:
          * , @NamedQuery(name = "Tradingidee.findByAktienId", query = "SELECT t FROM Tradingidee t WHERE t.aktienId = :aktienId")
@@ -251,75 +254,52 @@ public class TradingIdeeCtl implements Initializable {
 
     @FXML
     private void onAbschicken(ActionEvent event) {
-        aktTradingIdee = new Tradingidee();
 
         if (txtKurs_WKN.getText().isEmpty()) {
             lblMeldung.setText("Bitte eine Aktie eingeben");
+
+        } else if (txtAktKurs_Links.getText().isEmpty()) {
+            lblMeldung.setText("Bitte einen Aktienkurs eingeben");
+        } else if (txtStoppLoss.getText().isEmpty()) {
+            lblMeldung.setText("Bitte ein StoppLos eingeben");
+        } else if (txtKursZiel.getText().isEmpty()) {
+            lblMeldung.setText("Bitte ein KursZiel eingeben");
         } else {
             try {
-
                 /*
-                 *Erstellen der TradingIdee
+                 *Erstellen der TradingIdee, durch ermittlung ob Vorschlag oder Konkrete Tradingidee
                  */
-                aktAktie = aktAktie();
-                aktTradingIdee.setAktKurs((Double.valueOf(txtAktKurs_Links.getText())));
-                aktTradingIdee.setAktienId(aktAktie);
-                aktTradingIdee.setDepotID(aktDepot);
-                aktTradingIdee.setId(bestimmungAktieId());
-                aktTradingIdee.setKursStoppnegativ((Double.valueOf(txtStoppLoss.getText())));
-                aktTradingIdee.setKursStopppositiv((Double.valueOf(txtKursZiel.getText())));
-                tradingIdeeSrv.anlegen(aktTradingIdee);
-                aktTradingIdee = tradingIdeeSrv.find(aktTradingIdee.getId());
-
-                /*
-                 *Erstellen der Transaktion
-                 */
-                aktTransaktion = new Transaktion();
-                aktTransaktion.setTradingId(aktTradingIdee);
-                aktTransaktion.setAktieId(aktAktie);
-
-                //Ermittlung Stückzahl
-                aktTransaktion.setStueckzahl(Double.valueOf(txtStueckzahl.getText()));
-                //Generierung Notiz
-                aktTransaktion.setNotiz(createNotiz(aktTradingIdee));
 
                 if (rbKonkreter.isSelected()) {
-                    aktTransaktion.setKaufdatum(new Date());
-                    //Dieser boolean ermittelt ob die Tradingidee konkret oder eben nicht ist
-                    ProgModus.IS_SELECTED_RB = true;
-                    if (dp_oco.getValue() != null) {
-                        aktTransaktion.setOcoDatum(java.sql.Date.valueOf(dp_oco.getValue()));
+                    Date dp_date = Datumkonvert.konvertLocalDateToUtilDate(dp_oco.getValue());
+
+                    if (stueckzahl <= 0) {
+                        lblMeldung.setText("Bitte auf den Button Berechnen klicken und prüfen ob Werte sinnvoll sind!");
+                    } else if (dp_oco.getValue() == null) {
+                        lblMeldung.setText("Bitte ein OCO-Datum eingeben!");
+                    } else if (dp_date.before(new Date())) {
+                        lblMeldung.setText("Bitte ein OCO-Datum das nach dem aktuellen Datum ist!");
+                    } else {
+                        /*
+                         *Weil TradingIdee konkret, erstellen der zugehörigen Transaktion
+                         */
+                        Double stueckzahl = Double.valueOf(txtStueckzahl.getText());
+                        aktTradingIdee = createTradingIdee();
+                        transaktionCtl.createTransaktion(aktTradingIdee, aktAktie, dp_oco, stueckzahl);
+                        lblMeldung.setText("Tradingidee:" + " " + aktTradingIdee.getId() + " angelegt!");
+                        maskeClear();
                     }
                 } else {
-                    //Tradingidee nicht konkret
-                    ProgModus.IS_SELECTED_RB = false;
+                    //Tradingidee als Vorschlag
+                    aktTradingIdee = createTradingIdee();
+                    lblMeldung.setText("Tradingidee:" + " " + aktTradingIdee.getId() + " angelegt!");
+                    maskeClear();
                 }
-
-                transaktionSrv.anlegen(aktTransaktion);
-                maskeClear();
-
-                //Weiterleitung an Transaktionsmaske!!
-                tradingideeKonkret.show();
 
             } catch (Throwable ex) {
                 MessageSrv.handleException(ex);
             }
         }
-    }
-
-    /*
-    Erstellung der Notiz    
-     */
-    private String createNotiz(Tradingidee aktTradingidee) {
-        String notiz = "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *" + ","
-                + "* Depot-Eigentümer: " + aktTradingidee.getDepotID().getUser()
-                + " Depot-Wert: " + aktTradingidee.getDepotID().getKapital() + " Risiko pro Trade: " + aktTradingidee.getDepotID().getRiskikoeinzel() + "*" + ","
-                + "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *" + ","
-                + "* Gehandelte Aktie: " + aktTradingidee.getAktienId().getBez() + "                                                                      *" + ","
-                + "* Geplanter Zielkurs: " + aktTradingidee.getKursStopppositiv() + " geplanter Stopplosskurs: " + aktTradingidee.getKursStoppnegativ() + "                         *" + ","
-                + "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *" + ",";
-
-        return notiz;
     }
 
     private void maskeClear() {
@@ -329,35 +309,46 @@ public class TradingIdeeCtl implements Initializable {
         txtKurs_WKN.setText("");
         txtGuVVerhaeltnis.setText("");
         txtStueckzahl.setText("");
+        dp_oco.setValue(null);
+        stueckzahl = 0;
+        guV = 0;
+
     }
 
-    private Aktie aktAktie() {
-        aktAktie = null;
-        try {
-            aktAktie = aktieSrv.findByBezeichnung(txtKurs_WKN.getText());
-        } catch (Throwable ex) {
-            MessageSrv.handleException(ex);
+    private Tradingidee createTradingIdee() throws Throwable {
+        aktTradingIdee = new Tradingidee();
+        aktAktie = aktieSrv.findByBezeichnung(txtKurs_WKN.getText());
+        aktTradingIdee.setAktKurs((Double.valueOf(txtAktKurs_Links.getText())));
+        aktTradingIdee.setAktienId(aktAktie);
+        aktTradingIdee.setDepotID(aktDepot);
+        aktTradingIdee.setId(bestimmungAktieId());
+        aktTradingIdee.setKursStoppnegativ((Double.valueOf(txtStoppLoss.getText())));
+        aktTradingIdee.setKursStopppositiv((Double.valueOf(txtKursZiel.getText())));
+        aktTradingIdee.setErstellungsDatum(new Date());
+        if (rbKonkreter.isSelected()) {
+            aktTradingIdee.setIsVorschlag(false);
+        } else {
+            aktTradingIdee.setIsVorschlag(true);
         }
-        return aktAktie;
+        tradingIdeeSrv.anlegen(aktTradingIdee);
+        return aktTradingIdee;
     }
 }
 
-
- /**
-     * **************************************************************
-     * // Teile für FactoryMethode private Hyperlink hyperlink;
-     *
-     * private final HostServices hostServices;
-     *
-     * public TradingIdeeCtl(HostServices hostServices) { this.hostServices =
-     * hostServices; }
-     *
-     *
-     * @FXML private void openURL() {
-     * hostServices.showDocument(hyperlink.getText()); }
-     */
-    //****************************************************************
-
+/**
+ * **************************************************************
+ * // Teile für FactoryMethode private Hyperlink hyperlink;
+ *
+ * private final HostServices hostServices;
+ *
+ * public TradingIdeeCtl(HostServices hostServices) { this.hostServices =
+ * hostServices; }
+ *
+ *
+ * @FXML private void openURL() {
+ * hostServices.showDocument(hyperlink.getText()); }
+ */
+//****************************************************************
 //*****************************************************************************************************************************************
 // Hostservice einrichten:
 // Hier zum Nachlesen: https://stackoverflow.com/questions/33094981/javafx-8-open-a-link-in-a-browser-without-reference-to-application?rq=1
@@ -367,4 +358,4 @@ public class TradingIdeeCtl implements Initializable {
 /* Ist für die Methode startProgramm
 String path = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
 startProgramm(path);
-     */
+ */
