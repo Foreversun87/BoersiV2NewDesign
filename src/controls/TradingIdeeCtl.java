@@ -36,6 +36,7 @@ import services.TradingIdeeSrv;
 import services.TransaktionSrv;
 import utils.Datumkonvert;
 
+
 /**
  * FXML Controller class
  *
@@ -60,14 +61,6 @@ public class TradingIdeeCtl implements Initializable {
     @FXML
     private Button btnUebersicht;
     @FXML
-    private LineChart<?, ?> graphKurs;
-    @FXML
-    private Label txtTagesHoch;
-    @FXML
-    private Label txtTagesTief;
-    @FXML
-    private Label txtAktKurs_Rechts;
-    @FXML
     private Label txtAktuellerKontostand;
     @FXML
     private Label txtStueckzahl;
@@ -87,8 +80,6 @@ public class TradingIdeeCtl implements Initializable {
     private Label lblMeldung;
     @FXML
     private DatePicker dp_oco;
-    @FXML
-    private Label lbl_Meldung;
 
     public String getTest() {
         return test;

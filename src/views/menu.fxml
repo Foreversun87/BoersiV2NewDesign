@@ -1,46 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.*?>
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.layout.VBox?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.RadialGradient?>
+<?import javafx.scene.paint.Stop?>
 
-<SplitPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="420.0" prefWidth="458.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controls.MenuCtl">
-   <items>
-      <VBox prefHeight="200.0" prefWidth="100.0">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" stylesheets="@../resources/dark-theme.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controls.MenuCtl">
+   <children>
+      <AnchorPane layoutX="54.0" prefHeight="500.0" prefWidth="196.0">
          <children>
-            <MenuBar>
-              <menus>
-                <Menu mnemonicParsing="false" text="File">
-                  <items>
-                    <MenuItem mnemonicParsing="false" onAction="#onFile" text="Close" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Depot">
-                  <items>
-                        <MenuItem mnemonicParsing="false" onAction="#onAnlegen" text="anlegen" />
-                    <MenuItem mnemonicParsing="false" onAction="#onVerwalten" text="verwalten" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Trading">
-                  <items>
-                    <MenuItem mnemonicParsing="false" onAction="#onTradingIdee" text="TradingIdee" />
-                  </items>
-                </Menu>
-                  <Menu mnemonicParsing="false" text="Transaktion">
-                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#onTransaktion" text="Verwaltung" />
-                     </items>
-                  </Menu>
-              </menus>
-            </MenuBar>
-            <ImageView fx:id="imageView" fitHeight="335.0" fitWidth="348.0" pickOnBounds="true" preserveRatio="true" />
+            <JFXButton fx:id="btnTrading" alignment="BASELINE_LEFT" graphicTextGap="50.0" layoutX="-54.0" layoutY="122.0" onAction="#handleButtonAction" prefHeight="30.0" prefWidth="249.0" text="TradingIdee">
+               <graphic>
+                  <MaterialDesignIconView>
+                     <fill>
+                        <RadialGradient centerX="0.5" centerY="0.5" radius="0.5">
+                           <stops>
+                              <Stop color="#918181" />
+                              <Stop color="WHITE" offset="1.0" />
+                           </stops>
+                        </RadialGradient>
+                     </fill>
+                  </MaterialDesignIconView>
+               </graphic>
+            </JFXButton>
+            <JFXButton fx:id="btnTransaktion" alignment="BASELINE_LEFT" graphicTextGap="50.0" layoutX="-54.0" layoutY="163.0" onAction="#handleButtonAction" prefHeight="30.0" prefWidth="249.0" text="Transaktion">
+               <graphic>
+                  <MaterialDesignIconView />
+               </graphic>
+            </JFXButton>
+            <JFXButton alignment="BASELINE_LEFT" graphicTextGap="50.0" layoutX="-54.0" layoutY="202.0" onAction="#handleButtonAction" prefHeight="30.0" prefWidth="249.0" text="leer">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <graphic>
+                  <MaterialDesignIconView />
+               </graphic>
+            </JFXButton>
+            <JFXButton fx:id="btnDepot" alignment="BASELINE_LEFT" graphicTextGap="50.0" layoutX="-54.0" layoutY="82.0" onAction="#handleButtonAction" prefHeight="30.0" prefWidth="249.0" text="Depot">
+               <graphic>
+                  <MaterialDesignIconView />
+               </graphic>
+            </JFXButton>
+         
          </children>
-      </VBox>
-   </items>
-</SplitPane>
+         <effect>
+            <DropShadow />
+         </effect>
+      </AnchorPane>
+      <AnchorPane layoutX="262.0" layoutY="7.0" prefHeight="487.0" prefWidth="724.0">
+         <children>
+            <AnchorPane fx:id="paneTradingidee" prefHeight="490.0" prefWidth="720.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <fx:include source="tradingIdee.fxml" />
+            <AnchorPane fx:id="paneDepot" prefHeight="490.0" prefWidth="724.0" style="-fx-background-color: #567333;" />
+            <AnchorPane fx:id="paneTransaktion" prefHeight="490.0" prefWidth="724.0" style="-fx-background-color: #111111;" />
+         </children></AnchorPane>
+   </children>
+</AnchorPane>

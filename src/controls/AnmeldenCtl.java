@@ -5,25 +5,23 @@
  */
 package controls;
 
+import com.jfoenix.controls.JFXPasswordField;
+import com.jfoenix.controls.JFXTextField;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import model.DbVerbindung;
 import model.Depot;
 import services.DepotSrv;
 import services.MessageSrv;
+
 /**
  * FXML Controller class
  *
@@ -31,18 +29,13 @@ import services.MessageSrv;
  */
 public class AnmeldenCtl implements Initializable {
 
-    @FXML
-    private TextField lbl_Benutzer;
-    @FXML
-    private TextField lbl_Passwort;
-
     private DepotSrv depotsrv = new DepotSrv(DbVerbindung.getEmf());
     public static Depot aktDepot = null;
     public Stage stage = null;
     @FXML
-    private SplitPane mainSplit;
+    private JFXTextField username;
     @FXML
-    private ImageView imageView;
+    private JFXPasswordField password;
 
     public Stage getStage() {
         return stage;
@@ -50,6 +43,14 @@ public class AnmeldenCtl implements Initializable {
 
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    public Depot getAktDepot() {
+        return aktDepot;
+    }
+
+    public void setAktDepot(Depot aktDepot) {
+        this.aktDepot = aktDepot;
     }
 
     private void anmeldung(String name, String passwort) {
@@ -103,30 +104,17 @@ public class AnmeldenCtl implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        //Image image = new Image(getClass().getResourceAsStream("../bilder/GuentherJauch.png"));
-        //imageView.setImage(image);
+
     }
 
     @FXML
-    private void onEnteredBenutzer(KeyEvent event) {
-        if (event.getCode() == KeyCode.ENTER) {
-            anmeldung(lbl_Benutzer.getText(), lbl_Passwort.getText());
-        } else {
-            System.out.println("Kein Enter gedrückt!");
-        }
-    }
-
-    public Depot getAktDepot() {
-        return aktDepot;
-    }
-
-    public void setAktDepot(Depot aktDepot) {
-        this.aktDepot = aktDepot;
+    private void handleLoginButtonAction(ActionEvent event) {
+        anmeldung(username.getText(), password.getText());
     }
 
     @FXML
-    private void onEnteredPasswort(KeyEvent event) {
-        System.out.println("Passwort");
+    private void handleCancelButtonAction(ActionEvent event) {
+        System.exit(0);
     }
 
 }
