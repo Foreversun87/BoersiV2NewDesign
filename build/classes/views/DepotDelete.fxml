@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<SplitPane dividerPositions="0.8, 0.91" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="300.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controls.DepotDelete_Update">
+  <items>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+         <children>
+            <VBox layoutX="149.0" layoutY="68.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <Label alignment="CENTER" prefHeight="30.0" prefWidth="600.0" style="-fx-background-color: grey; -fx-border-color: red;" text="Depot verwalten" underline="true">
+                     <font>
+                        <Font name="Courier New Bold" size="21.0" />
+                     </font>
+                  </Label>
+                  <TableView fx:id="tbl_Depot" onMouseClicked="#onAuswahl" prefHeight="206.0" prefWidth="348.0">
+                    <columns>
+                      <TableColumn fx:id="colKapital" prefWidth="155.0" text="Kapital" />
+                      <TableColumn fx:id="colGesamt" prefWidth="96.0" text="Risiko - Gesamt" />
+                        <TableColumn fx:id="colTrade" prefWidth="96.0" text="Risiko - Trade" />
+                    </columns>
+                  </TableView>
+               </children>
+            </VBox>
+         </children></AnchorPane>
+      <HBox prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <TextField fx:id="txt_kapital" />
+            <TextField fx:id="txt_risikoGesamt" />
+            <TextField fx:id="txt_risikoTrade" />
+         </children>
+      </HBox>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+         <children>
+            <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <Button fx:id="btn_Delete" mnemonicParsing="false" onAction="#onDeleteDepot" prefHeight="25.0" prefWidth="69.0" text="Löschen" />
+                  <Button fx:id="btn_Update" mnemonicParsing="false" onAction="#onUpdateDepot" prefHeight="25.0" prefWidth="150.0" text="Ändern" />
+                  <Button fx:id="btn_Exit" mnemonicParsing="false" onAction="#onExitDepot" prefHeight="25.0" prefWidth="133.0" text="Beenden" />
+               </children>
+            </HBox>
+         </children></AnchorPane>
+  </items>
+</SplitPane>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.RadialGradient?>
+<?import javafx.scene.paint.Stop?>
+
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" stylesheets="@../resources/dark-theme.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controls.MenuCtl">
+   <children>
+      <AnchorPane layoutX="54.0" prefHeight="500.0" prefWidth="196.0">
+         <children>
+            <JFXButton fx:id="btnTrading" alignment="BASELINE_LEFT" graphicTextGap="50.0" layoutX="-54.0" layoutY="122.0" onAction="#handleButtonAction" prefHeight="30.0" prefWidth="249.0" text="TradingIdee">
+               <graphic>
+                  <MaterialDesignIconView>
+                     <fill>
+                        <RadialGradient centerX="0.5" centerY="0.5" radius="0.5">
+                           <stops>
+                              <Stop color="#918181" />
+                              <Stop color="WHITE" offset="1.0" />
+                           </stops>
+                        </RadialGradient>
+                     </fill>
+                  </MaterialDesignIconView>
+               </graphic>
+            </JFXButton>
+            <JFXButton fx:id="btnTransaktion" alignment="BASELINE_LEFT" graphicTextGap="50.0" layoutX="-54.0" layoutY="163.0" onAction="#handleButtonAction" prefHeight="30.0" prefWidth="249.0" text="Transaktion">
+               <graphic>
+                  <MaterialDesignIconView />
+               </graphic>
+            </JFXButton>
+            <JFXButton fx:id="btnDepot" alignment="BASELINE_LEFT" graphicTextGap="50.0" layoutX="-54.0" layoutY="82.0" onAction="#handleButtonAction" prefHeight="30.0" prefWidth="249.0" text="Depot">
+               <graphic>
+                  <MaterialDesignIconView />
+               </graphic>
+            </JFXButton>
+            <JFXButton fx:id="btnAktie" alignment="BASELINE_LEFT" graphicTextGap="50.0" layoutX="-54.0" layoutY="202.0" onAction="#handleButtonAction" prefHeight="30.0" prefWidth="249.0" text="Aktie">
+               <graphic>
+                  <MaterialDesignIconView />
+               </graphic>
+            </JFXButton>
+         
+         </children>
+         <effect>
+            <DropShadow />
+         </effect>
+      </AnchorPane>
+      <AnchorPane layoutX="270.0" prefHeight="500.0" prefWidth="730.0">
+         <children>
+            <fx:include fx:id="tradingIdeePane" source="tradingIdee.fxml" />
+            <fx:include fx:id="transaktionPane" source="TransaktionXML.fxml" />
+            <fx:include fx:id="aktiePane" source="AktieXML.fxml" />
+         </children></AnchorPane>
+   </children>
+</AnchorPane>

@@ -2,13 +2,12 @@
 
 <?import com.jfoenix.controls.JFXButton?>
 <?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.paint.RadialGradient?>
 <?import javafx.scene.paint.Stop?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" stylesheets="@../resources/dark-theme.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controls.MenuCtl">
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" stylesheets="@../resources/dark-theme.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controls.MenuCtl">
    <children>
       <AnchorPane layoutX="54.0" prefHeight="500.0" prefWidth="196.0">
          <children>
@@ -31,15 +30,12 @@
                   <MaterialDesignIconView />
                </graphic>
             </JFXButton>
-            <JFXButton alignment="BASELINE_LEFT" graphicTextGap="50.0" layoutX="-54.0" layoutY="202.0" onAction="#handleButtonAction" prefHeight="30.0" prefWidth="249.0" text="leer">
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
+            <JFXButton fx:id="btnDepot" alignment="BASELINE_LEFT" graphicTextGap="50.0" layoutX="-54.0" layoutY="82.0" onAction="#handleButtonAction" prefHeight="30.0" prefWidth="249.0" text="Depot">
                <graphic>
                   <MaterialDesignIconView />
                </graphic>
             </JFXButton>
-            <JFXButton fx:id="btnDepot" alignment="BASELINE_LEFT" graphicTextGap="50.0" layoutX="-54.0" layoutY="82.0" onAction="#handleButtonAction" prefHeight="30.0" prefWidth="249.0" text="Depot">
+            <JFXButton fx:id="btnAktie" alignment="BASELINE_LEFT" graphicTextGap="50.0" layoutX="-54.0" layoutY="202.0" onAction="#handleButtonAction" prefHeight="30.0" prefWidth="249.0" text="Aktie">
                <graphic>
                   <MaterialDesignIconView />
                </graphic>
@@ -50,12 +46,11 @@
             <DropShadow />
          </effect>
       </AnchorPane>
-      <AnchorPane layoutX="262.0" layoutY="7.0" prefHeight="487.0" prefWidth="724.0">
+      <AnchorPane layoutX="270.0" prefHeight="500.0" prefWidth="730.0">
          <children>
-            <AnchorPane fx:id="paneTradingidee" prefHeight="490.0" prefWidth="720.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-            <fx:include source="tradingIdee.fxml" />
-            <AnchorPane fx:id="paneDepot" prefHeight="490.0" prefWidth="724.0" style="-fx-background-color: #567333;" />
-            <AnchorPane fx:id="paneTransaktion" prefHeight="490.0" prefWidth="724.0" style="-fx-background-color: #111111;" />
+            <fx:include fx:id="tradingIdeePane" source="tradingIdee.fxml" />
+            <fx:include fx:id="transaktionPane" source="TransaktionXML.fxml" />
+            <fx:include fx:id="aktiePane" source="AktieXML.fxml" />
          </children></AnchorPane>
    </children>
 </AnchorPane>

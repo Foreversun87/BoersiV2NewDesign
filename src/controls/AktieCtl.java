@@ -30,15 +30,15 @@ public class AktieCtl implements Initializable {
     private TextField lbl_WKN;
     @FXML
     private TextField lbl_Bezeichnung;
-    @FXML
     private Button btn_Create;
     @FXML
     private Label lbl_meldung;
-    @FXML
-    private Button btn_Exit;
 
     private AktieSrv aktieSrv = new AktieSrv(DbVerbindung.getEmf());
-    //private Aktie aktAktie = null;
+    @FXML
+    private Button btnCreate;
+   
+    
 
     /**
      * Initializes the controller class.
@@ -51,35 +51,29 @@ public class AktieCtl implements Initializable {
     @FXML
     private void onCreateDepot(ActionEvent event) {
         try {
-            if (lbl_Bezeichnung.getText().isEmpty() || lbl_WKN.getText().isEmpty()) {
-                lbl_meldung.setText("Bitte alle Felder ausfüllen");
-            } else {
-                Aktie aktAktie = new Aktie();
-                btn_Create.setDisable(true);
+            
+                Aktie aktAktie = new Aktie();                
                 aktAktie.setBez((lbl_Bezeichnung.getText()));
                 aktAktie.setWkn((lbl_WKN.getText()));
                 aktieSrv.anlegen(aktAktie);
-                lbl_meldung.setText("Aktie " + aktAktie.getId() + " gespeichert!");
+                lbl_meldung.setText("Aktie " + aktAktie.getBez()+ " angelegt!");
                 maskeClear();
-                btn_Create.setDisable(false);
-            }
+                
+            
 
         } catch (Throwable ex) {
             MessageSrv.handleException(ex);
             btn_Create.setDisable(false);
+            
         }
     }
 
     public void maskeClear() throws Exception {
         lbl_Bezeichnung.setText("");
         lbl_WKN.setText("");
-        lbl_meldung.setText("");
+        
     }
 
-    @FXML
-    private void onExitDepot(ActionEvent event) {
-        Stage stage = (Stage) lbl_Bezeichnung.getScene().getWindow();
-        stage.close();
-    }
+    
 
 }

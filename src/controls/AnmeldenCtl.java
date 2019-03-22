@@ -7,20 +7,22 @@ package controls;
 
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import model.DbVerbindung;
 import model.Depot;
 import services.DepotSrv;
 import services.MessageSrv;
+import services.StageSingleton;
 
 /**
  * FXML Controller class
@@ -29,92 +31,49 @@ import services.MessageSrv;
  */
 public class AnmeldenCtl implements Initializable {
 
+    private Parent rootNode;
+    private Stage anmeldenStage = StageSingleton.getInstance();
     private DepotSrv depotsrv = new DepotSrv(DbVerbindung.getEmf());
-    public static Depot aktDepot = null;
-    public Stage stage = null;
+    public static Depot aktDepot;
     @FXML
     private JFXTextField username;
     @FXML
     private JFXPasswordField password;
+   
 
-    public Stage getStage() {
-        return stage;
-    }
-
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
-    public Depot getAktDepot() {
-        return aktDepot;
-    }
-
-    public void setAktDepot(Depot aktDepot) {
-        this.aktDepot = aktDepot;
-    }
-
-    private void anmeldung(String name, String passwort) {
-
-        try {
-            aktDepot = depotsrv.findByUser(name);
-            if (aktDepot.getPasswort().equals(passwort)) {
-
-                FXMLLoader fxmlLoader = new FXMLLoader();
-                fxmlLoader.setLocation(getClass().getResource("../views/menu.fxml"));
-
-                FXMLLoader fxmlLoaderTrading = new FXMLLoader(getClass().getResource("../views/tradingIdee.fxml"));
-
-                System.out.println("Ich bin der Loader Trading von AnmeldenCtl " + fxmlLoaderTrading.toString());
-                try {
-                    fxmlLoader.load();
-                    fxmlLoaderTrading.load();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+    private void anmeldung(String name, String passwort) throws Throwable {
+        aktDepot = new Depot();
+        aktDepot = depotsrv.findByUser(name);
+        if (aktDepot.getPasswort().equals(passwort)) {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../views/menu.fxml"));
+            rootNode = fxmlLoader.load();
+            anmeldenStage.setScene(new Scene(rootNode));
+            rootNode.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    System.out.println("Hello rootNode");
                 }
+            });
+            anmeldenStage.show();
+        }
+    }
 
-                MenuCtl menuCtl = fxmlLoader.getController();
-
-                menuCtl.setAktDepot(aktDepot);
-                menuCtl.setStage(stage);
-                menuCtl.setTest("Hallo");
-
-                /*
-                TradingIdeeCtl tradingCtl = fxmlLoaderTrading.getController();
-                tradingCtl.setTest("Hallo");
-                tradingCtl.setMainStage(stage);   
-                 */
-                System.out.println(menuCtl.getAktDepot());
-
-                Parent root = fxmlLoader.getRoot();
-                Scene scene = new Scene(root);
-                stage.setScene(scene);
-                stage.show();
-            } else {
-                System.out.println("Fehler bei Anmeldung");
-            }
-
+    @FXML
+    private void handleLoginButtonAction(ActionEvent event) {
+        try {
+            anmeldung(username.getText(), password.getText());
         } catch (Throwable ex) {
             MessageSrv.handleException(ex);
         }
     }
 
-    /**
-     * Initializes the controller class.
-     */
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void initialize(URL location, ResourceBundle resources) {
 
-    }
-
-    @FXML
-    private void handleLoginButtonAction(ActionEvent event) {
-        anmeldung(username.getText(), password.getText());
     }
 
     @FXML
     private void handleCancelButtonAction(ActionEvent event) {
-        System.exit(0);
     }
 
 }

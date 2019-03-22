@@ -12,8 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,7 +21,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.Dialog;
+
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
@@ -32,13 +31,14 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import javax.swing.JTextField;
+
 import model.Aktie;
 import model.DbVerbindung;
 import model.Tradingidee;
 import model.Transaktion;
 import model.TransaktionsTabellenModel;
 import services.MessageSrv;
+
 import services.TransaktionSrv;
 
 /**
@@ -70,17 +70,37 @@ public class TransaktionCtl implements Initializable {
 
     private TransaktionSrv transaktionSrv = new TransaktionSrv(DbVerbindung.getEmf());
 
-    private Transaktion aktTransaktion;
+    private Transaktion aktTransaktion = new Transaktion();
     @FXML
     private SplitPane stageTransaktions;
+    
 
     public Transaktion getAktTransaktion() {
         return aktTransaktion;
     }
-
+    
+    
+    
     public void setAktTransaktion(Transaktion aktTransaktion) {
         this.aktTransaktion = aktTransaktion;
     }
+    
+    
+    /*   
+    private static TransaktionCtl instance; 
+    
+    private TransaktionCtl(TableView<TransaktionsTabellenModel> tblTransaktion) {
+        this.tblTransaktion = tblTransaktion;       
+    }    
+    
+    public static TransaktionCtl getInstance() {
+        if (instance == null) {
+            instance = new TransaktionCtl(tblTransaktionFinal); 
+        }
+        return instance;
+    }
+    */    
+        
 
     private TransaktionsTabellenModel dt;
 
@@ -88,6 +108,7 @@ public class TransaktionCtl implements Initializable {
     //DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
     SimpleDateFormat df = new SimpleDateFormat(pattern);
 
+        
     /**
      * Initializes the controller class.
      */
@@ -101,10 +122,9 @@ public class TransaktionCtl implements Initializable {
         colStueckzahl.setCellValueFactory(new PropertyValueFactory<>("stueckzahl"));
         colVerkaufDatum.setCellValueFactory(new PropertyValueFactory<>("verkaufsdatum"));
         colVerkaufKurs.setCellValueFactory(new PropertyValueFactory<>("kursVerkauf"));
-
+        
         tblTransaktion.setEditable(true);
         colOCODate.setCellFactory(TextFieldTableCell.forTableColumn());
-
         try {
             fuellenTab();
         } catch (Throwable ex) {
@@ -113,7 +133,12 @@ public class TransaktionCtl implements Initializable {
     }
 
     public void fuellenTab() throws Throwable {
+        //instance = new TransaktionCtl(tblTransaktion);
+        System.out.println("BIn in der fuellenTab");
         tblTransaktion.getItems().clear();
+        
+        
+        
         List<Transaktion> transaktionsList = transaktionSrv.findAlle();
 
         for (Transaktion t : transaktionsList) {
@@ -134,6 +159,8 @@ public class TransaktionCtl implements Initializable {
                 tt.setKaufdatum(df.format(t.getKaufdatum()));
             }
             tblTransaktion.getItems().add(tt);
+            //tblTransaktion.getItems().add(tt);
+            
         }
     }
 
@@ -185,6 +212,10 @@ public class TransaktionCtl implements Initializable {
         ProgModus.IS_ANGELEGT = true;
         ProgModus.IS_COMPLETED = false;
         transaktionSrv.anlegen(aktTransaktion);
+        System.out.println("Wurde angelegt");
+        
+        
+        
 
     }
 
@@ -253,57 +284,6 @@ public class TransaktionCtl implements Initializable {
             MessageSrv.handleException(ex);
         }
 
-
-        /* 
-        try {
-            if (dt == null) {
-                return;
-            } else {
-
-                if (!txtKaufDatum.getText().equals("")) {
-                    aktTransaktion.setKaufdatum(df.parse(txtKaufDatum.getText()));
-                } else {
-                    aktTransaktion.setKaufdatum(null);
-                }
-                if (!txtKursVerkauf.getText().equals("")) {
-                    aktTransaktion.setKursVerkauf(Double.valueOf(txtKursVerkauf.getText()));
-
-                } else {
-                    aktTransaktion.setKursVerkauf(null);
-                }
-                if (!txtOCODate.getText().equals("")) {
-                    aktTransaktion.setOcoDatum(df.parse(txtOCODate.getText()));
-                } else {
-                    aktTransaktion.setOcoDatum(null);
-                }
-
-                if (!txtStueckzahl.getText().equals("")) {
-                    aktTransaktion.setStueckzahl(Double.valueOf(txtStueckzahl.getText()));
-                } else {
-                    aktTransaktion.setStueckzahl(null);
-                }
-
-                if (!txtVerkaufDatum.getText().equals("")) {
-                    aktTransaktion.setVerkaufdatum(df.parse(txtVerkaufDatum.getText()));
-
-                } else {
-                    aktTransaktion.setVerkaufdatum(null);
-                }
-
-                if (!txtVerkaufDatum.getText().equals("") || !txtKursVerkauf.getText().equals("")) {
-                    ProgModus.IS_COMPLETED = true;
-                } else {
-                    ProgModus.IS_COMPLETED = false;
-                }
-                aktTransaktion = transaktionSrv.aendern(aktTransaktion);
-                // txtAusgabe.setText("Depot " + aktDepot.getId() + " geändert!");
-                fuellenTab();
-                clear();
-            }
-        } catch (Throwable ex) {
-            MessageSrv.handleException(ex);
-        }
-         */
     }
 
     @FXML
@@ -330,7 +310,7 @@ public class TransaktionCtl implements Initializable {
 
         }
     }
-
+    
     @FXML
     private void onEditOcoDatum(TableColumn.CellEditEvent<TransaktionsTabellenModel, String> event) {
         TransaktionsTabellenModel transaktionTabellenModel = tblTransaktion.getSelectionModel().getSelectedItem();
@@ -343,5 +323,19 @@ public class TransaktionCtl implements Initializable {
             MessageSrv.handleException(ex);
         }
     }
+
+    @FXML
+    private void handleReload(ActionEvent event) throws Throwable {
+         fuellenTab();
+    }
+    
+    
+    
+
+    
+    
+
+    
+    
 
 }

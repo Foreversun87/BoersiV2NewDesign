@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<SplitPane fx:id="stageTransaktions" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="500.0" prefWidth="730.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controls.TransaktionCtl">
+  <items>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+         <children>
+            <VBox layoutX="149.0" layoutY="68.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <TableView fx:id="tblTransaktion" onMouseClicked="#onAuswahl" prefHeight="500.0" prefWidth="730.0" stylesheets="@../resources/dark-theme.css">
+                    <columns>
+                      <TableColumn fx:id="colAktie" prefWidth="108.66668701171875" text="Aktie" />
+                      <TableColumn fx:id="colStueckzahl" prefWidth="81.0" text="Stückzahl" />
+                        <TableColumn fx:id="colOCODate" onEditCommit="#onEditOcoDatum" prefWidth="115.6666259765625" text="OCO-Datum" />
+                        <TableColumn fx:id="colVerkaufKurs" prefWidth="108.3333740234375" text="Kurs Verkauf" />
+                        <TableColumn fx:id="colVerkaufDatum" prefWidth="121.33331298828125" text="Verkaufsdatum" />
+                        <TableColumn fx:id="colKaufKurs" prefWidth="93.66668701171875" text="Kurs Kauf" />
+                        <TableColumn fx:id="colKaufDatum" prefWidth="101.333251953125" text="Kaufdatum" />
+                    </columns>
+                     <contextMenu>
+                        <ContextMenu>
+                          <items>
+                            <MenuItem mnemonicParsing="false" onAction="#handleDelete" text="Transaktion löschen" />
+                              <MenuItem mnemonicParsing="false" onAction="#handleUpdate" text="Transaktion abschließen" />
+                              <MenuItem mnemonicParsing="false" onAction="#handleNotiz" text="Notiz von Transaktion anzeigen" />
+                              <MenuItem mnemonicParsing="false" onAction="#handleReload" text="Liste aktualisieren" />
+                          </items>
+                        </ContextMenu>
+                     </contextMenu>
+                  </TableView>
+               </children>
+            </VBox>
+         </children></AnchorPane>
+  </items>
+</SplitPane>

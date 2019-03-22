@@ -123,6 +123,7 @@ public class TransaktionSrv implements Serializable {
         EntityManager em = getEntityManager();
 
         try {
+            System.out.println("Ich prüfe in der Datenbank nach Transaktionen");
             // Query abfrage = em.createQuery("Select sp from Sparte sp", Sparte.class);
             Query abfrage = em.createNamedQuery("Transaktion.findAll");
             List<Transaktion> transaktionAlle = abfrage.getResultList();
