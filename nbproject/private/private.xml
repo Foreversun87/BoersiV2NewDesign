@@ -2,14 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Users/pschmidt/Documents/NetBeansProjects/Börse/src/controls/TradingIdeeCtl.java</file>
-            <file>file:/C:/Users/pschmidt/Documents/NetBeansProjects/Börse/src/views/menu.fxml</file>
-            <file>file:/C:/Users/pschmidt/Documents/NetBeansProjects/Börse/src/controls/AnmeldenCtl.java</file>
-            <file>file:/C:/Users/pschmidt/Documents/NetBeansProjects/Börse/src/controls/MenuCtl.java</file>
-            <file>file:/C:/Users/pschmidt/Documents/NetBeansProjects/Börse/src/controls/TransaktionCtl.java</file>
-            <file>file:/C:/Users/pschmidt/Documents/NetBeansProjects/Börse/src/controls/AktieCtl.java</file>
-            <file>file:/C:/Users/pschmidt/Documents/NetBeansProjects/Börse/src/mainApps/Anmelden.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>
